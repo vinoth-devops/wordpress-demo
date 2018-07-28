@@ -1,2 +1,2 @@
 # wordpress-demo
-wordpress demo with kubernetes.
+wordpress demo with kubernetes
