@@ -1,0 +1,32 @@
+# Default values for wordpress.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: gcr.io/kubernetes-210413/wordpress
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+  nodeport: 30720
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "k8s-ingress"
+
+probeconfig:
+  httpGet:
+    path: /wp-admin/install.php
+    port: 80
+    scheme: HTTP
+  initialDelaySeconds: 30
+  timeoutSeconds: 5
+
+db:
+  db_host: wordpress-mysql
+  db_password: mysql-pass

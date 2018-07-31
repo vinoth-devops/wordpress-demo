@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "wordpress.fullname" . }}
+  labels:
+    app: {{ template "wordpress.name" . }}
+    chart: {{ template "wordpress.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "wordpress.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "wordpress.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+{{ toYaml .Values.probeconfig | indent 12 }}
+          readinessProbe:
+{{ toYaml .Values.probeconfig | indent 12 }}
+          env:
+          - name: WORDPRESS_DB_HOST
+            value: {{ .Values.db.db_host }}
+          - name: WORDPRESS_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.db.db_password }}
+                key: password
